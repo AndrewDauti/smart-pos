@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+pos.db
+
+# Node / Flutter
+.build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+android/app/debug
+android/app/profile
+android/app/release
+
+# IDE / OS Files
+.vscode/
+.idea/
+*.iml
+*.log
+.DS_Store
+
+# Backup & Misc
+*.bak
+*.tmp
+*.sqlite

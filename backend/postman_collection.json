@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "Smart POS API",
+    "_postman_id": "d3f9f5b7-2c74-4ef8-9a10-20250829092828",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "List Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"sku\": \"SKU-NEW\", \"name\": \"New Item\", \"price\": 12.5, \"tax_rate\": 16.0}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Sale",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"items\": [{\"product_id\": 1, \"qty\": 2}, {\"product_id\": 2, \"qty\": 1}], \"discount\": 5.0}"
+        },
+        "url": {
+          "raw": "{{base_url}}/sales",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "sales"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Submit Invoice",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"sale_id\": 1}"
+        },
+        "url": {
+          "raw": "{{base_url}}/invoices/submit",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "invoices",
+            "submit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Daily Sales",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/reports/daily-sales",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "reports",
+            "daily-sales"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    }
+  ]
+}
