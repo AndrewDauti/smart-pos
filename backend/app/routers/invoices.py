@@ -1,40 +1,40 @@
+import os
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from ..database import get_db
+
 from .. import models, schemas
+from ..database import get_db
 from ..utils.tax_client import submit_invoice
-from typing import Dict, Any
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
 
 
-def build_invoice_json(sale: models.Sale) -> Dict[str, Any]:
-    """
-    Build invoice JSON according to ZRA Smart Invoice (Tax Invoice) structure.
-    This is simplified for demo purposes — in production you'd map fields exactly
-    to ZRA's published e-invoicing JSON schema.
-    """
+def build_invoice_json(sale: models.Sale) -> dict[str, Any]:
+    """Build a simplified ZRA-style tax invoice for the sale."""
+    created = sale.created_at
+    items = sale.items_json or []
     return {
         "Invoice": {
             "InvoiceNumber": f"INV-{sale.id:06d}",
-            "InvoiceDate": sale.created_at.strftime("%Y-%m-%d"),
-            "InvoiceTime": sale.created_at.strftime("%H:%M:%S"),
+            "InvoiceDate": created.strftime("%Y-%m-%d") if created else "",
+            "InvoiceTime": created.strftime("%H:%M:%S") if created else "",
             "Currency": "ZMW",
             "Seller": {
-                "TIN": "1001234567",
-                "BusinessName": "Smart POS Demo Ltd",
-                "Address": "Lusaka, Zambia",
+                "TIN": os.getenv("BUSINESS_TIN", "1001234567"),
+                "BusinessName": os.getenv("BUSINESS_NAME", "Mpepo Kitchen"),
+                "Address": os.getenv("BUSINESS_ADDRESS", "Lusaka, Zambia"),
             },
             "Buyer": {
-                # If your sale does not contain buyer info, keep it as N/A / walk-in
-                "TIN": getattr(sale, "buyer_tin", "") or "N/A",
-                "BusinessName": getattr(sale, "buyer_name", "") or "Walk-in Customer",
-                "Address": getattr(sale, "buyer_address", "") or "N/A",
+                "TIN": "N/A",
+                "BusinessName": "Walk-in Customer",
+                "Address": "N/A",
             },
             "LineItems": [
                 {
-                    "LineNumber": i + 1,
+                    "LineNumber": index + 1,
                     "ProductCode": item.get("sku"),
                     "Description": item.get("name"),
                     "Quantity": item.get("qty"),
@@ -43,12 +43,13 @@ def build_invoice_json(sale: models.Sale) -> Dict[str, Any]:
                     "TaxCategoryCode": "A" if (item.get("tax_rate") or 0) > 0 else "Z",
                     "NetAmount": item.get("line_subtotal"),
                     "TaxAmount": item.get("line_tax"),
-                    "GrossAmount": (item.get("line_subtotal") or 0) + (item.get("line_tax") or 0),
+                    "GrossAmount": item.get("line_total")
+                    or ((item.get("line_subtotal") or 0) + (item.get("line_tax") or 0)),
                 }
-                for i, item in enumerate(sale.items_json)
+                for index, item in enumerate(items)
             ],
             "Totals": {
-                "NetAmount": sum((i.get("line_subtotal") or 0) for i in sale.items_json),
+                "NetAmount": sum((item.get("line_subtotal") or 0) for item in items),
                 "TaxAmount": sale.tax,
                 "Discount": sale.discount,
                 "GrossAmount": sale.total,
@@ -57,40 +58,12 @@ def build_invoice_json(sale: models.Sale) -> Dict[str, Any]:
     }
 
 
-@router.post("/submit", response_model=schemas.InvoiceLogRead)
-def submit_invoice_endpoint(body: schemas.InvoiceSubmission, db: Session = Depends(get_db)):
-    sale = db.query(models.Sale).get(body.sale_id)
-    if not sale:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
-
-    payload = build_invoice_json(sale)
-
-    try:
-        resp = submit_invoice(payload)  # returns dict like {"status_code":200, "body": {...}} or error dict
-    except Exception as exc:
-        log = models.InvoiceLog(
-            sale_id=sale.id,
-            request_json=jsonable_encoder(payload),
-            response_json={"error": str(exc)},
-            status="FAILED",
-        )
-        db.add(log)
-        db.commit()
-        db.refresh(log)
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Invoice submission failed: {str(exc)}")
-
-    # Normalize response_json to include original invoice payload + external response
-    try:
-        external = resp if isinstance(resp, dict) else {"raw": str(resp)}
-        response_record = {
-            "submitted_invoice": jsonable_encoder(payload.get("Invoice", payload)),  # include invoice payload under this key
-            "external_response": external
-        }
-    except Exception:
-        response_record = {"submitted_invoice": payload.get("Invoice", payload), "external_response": str(resp)}
-
+def _record_submission(sale: models.Sale, payload: dict, external: dict, db: Session) -> models.InvoiceLog:
     status_text = "SUCCESS" if external.get("status_code") in (200, 201) else "FAILED"
-
+    response_record = {
+        "submitted_invoice": jsonable_encoder(payload.get("Invoice", payload)),
+        "external_response": external if isinstance(external, dict) else {"raw": str(external)},
+    }
     log = models.InvoiceLog(
         sale_id=sale.id,
         request_json=jsonable_encoder(payload),
@@ -100,16 +73,25 @@ def submit_invoice_endpoint(body: schemas.InvoiceSubmission, db: Session = Depen
     db.add(log)
     db.commit()
     db.refresh(log)
-
-    if status_text != "SUCCESS":
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail={"status": status_text, "response": response_record})
-
     return log
 
 
+@router.post("/submit", response_model=schemas.InvoiceLogRead)
+@router.post("/submit/", response_model=schemas.InvoiceLogRead)
+def submit_invoice_endpoint(body: schemas.InvoiceSubmission, db: Session = Depends(get_db)):
+    sale = db.get(models.Sale, body.sale_id)
+    if not sale:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
 
-# alias route to be tolerant of trailing slash (accept both /submit and /submit/)
-@router.post("/submit/")
-def submit_invoice_endpoint_slash(body: schemas.InvoiceSubmission, db: Session = Depends(get_db)):
-    return submit_invoice_endpoint(body, db)
+    already = (
+        db.query(models.InvoiceLog)
+        .filter_by(sale_id=sale.id, status="SUCCESS")
+        .order_by(models.InvoiceLog.id.desc())
+        .first()
+    )
+    if already:
+        return already
 
+    payload = build_invoice_json(sale)
+    external = submit_invoice(payload)
+    return _record_submission(sale, payload, external, db)
