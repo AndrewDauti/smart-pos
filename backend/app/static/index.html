@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mpepo Kitchen · Register</title>
+  <meta name="theme-color" content="#1f4636" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%231f4636'/%3E%3Cpath d='M16 42V24h6l10 12 10-12h6v18h-6V32l-10 12-10-12v10z' fill='%23f4ecdf'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@380;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1d1914;
+      --muted: #6f655c;
+      --paper: #f3eee6;
+      --card: #fffdf9;
+      --line: #e3d6c6;
+      --green: #1f4636;
+      --green-deep: #143126;
+      --gold: #8d6232;
+      --clay: #8d4332;
+      --ok: #1d6a43;
+      --bad: #8f2d2d;
+      --shadow: 0 16px 40px rgba(48, 32, 16, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      background-image: radial-gradient(rgba(70, 46, 20, 0.045) 0.8px, transparent 0.8px);
+      background-size: 16px 16px;
+    }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 560; letter-spacing: -0.03em; margin: 0; }
+
+    .hidden { display: none !important; }
+
+    #login {
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: minmax(280px, 1.05fr) minmax(300px, 0.95fr);
+    }
+    .login-story {
+      background:
+        linear-gradient(165deg, rgba(255, 244, 220, 0.08), transparent 42%),
+        var(--green-deep);
+      color: #f6efe4;
+      padding: 48px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+    .eyebrow {
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      font-weight: 600;
+      opacity: 0.78;
+    }
+    .login-story h1 { font-size: clamp(3.2rem, 6vw, 5.4rem); line-height: 0.92; max-width: 8ch; margin-top: 18px; }
+    .login-story p { max-width: 34ch; font-size: 1.12rem; line-height: 1.5; color: #eadfcf; }
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+    }
+    .login-card { width: min(420px, 100%); }
+    .login-card h2 { font-size: 2.1rem; margin-bottom: 8px; }
+    .login-card .lede { color: var(--muted); margin: 0 0 22px; line-height: 1.45; }
+    label { display: block; font-size: 0.86rem; font-weight: 600; margin-bottom: 6px; }
+    input[type="text"], input[type="password"], input[type="search"], input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+    }
+    input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(31, 70, 54, 0.15); }
+    .field { margin-bottom: 14px; }
+    .primary, .ghost, .danger {
+      border-radius: 999px;
+      border: 0;
+      padding: 12px 18px;
+      font-weight: 650;
+    }
+    .primary { background: var(--green); color: #f6efe4; }
+    .primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ghost { background: transparent; border: 1px solid rgba(246, 239, 228, 0.35); color: inherit; }
+    .app .ghost { border-color: var(--line); background: var(--card); }
+    .full { width: 100%; }
+    .hint { margin-top: 14px; color: var(--muted); font-size: 0.88rem; }
+    .status-line { min-height: 1.2em; margin-top: 10px; font-size: 0.9rem; }
+    .status-line.error { color: var(--bad); }
+
+    header.app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 22px;
+      background: var(--green);
+      color: #f6efe4;
+    }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand strong { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; font-weight: 560; letter-spacing: -0.03em; }
+    .brand span { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; }
+    .bar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .app .ghost { color: var(--ink); }
+    .app-bar .ghost { color: #f6efe4; background: transparent; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      height: calc(100vh - 74px);
+    }
+    .menu { padding: 18px 18px 28px; overflow: auto; }
+    .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .toolbar input { max-width: 280px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 600;
+    }
+    .chip.active { background: var(--green); color: #f6efe4; border-color: var(--green); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 168px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 6px;
+      background: var(--gold);
+    }
+    .card.drinks::before { background: #2f6f8f; }
+    .card.starters::before { background: var(--clay); }
+    .card .cat { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+    .card h3 { font-size: 1.28rem; line-height: 1.15; margin: 8px 0; }
+    .card .meta { color: var(--muted); font-size: 0.86rem; }
+    .card .price { margin-top: auto; padding-top: 12px; font-weight: 700; }
+    .stepper { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .stepper button, .icon-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--line); background: #fff; font-weight: 700;
+    }
+    .add {
+      margin-top: 10px;
+      align-self: flex-start;
+      background: var(--green);
+      color: #f6efe4;
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 700;
+    }
+
+    .ticket {
+      background: #fffdf8;
+      border-left: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .ticket header, .ticket footer { padding: 16px 18px; }
+    .ticket header { border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: baseline; }
+    .ticket header p { margin: 4px 0 0; color: var(--muted); font-size: 0.86rem; }
+    .lines { flex: 1; overflow: auto; padding: 8px 18px 12px; }
+    .line { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px 0; border-bottom: 1px solid #f0e6d8; }
+    .line .qty { color: var(--muted); font-size: 0.86rem; }
+    .totals { padding: 4px 18px 8px; }
+    .totals div { display: flex; justify-content: space-between; margin: 4px 0; color: var(--muted); }
+    .totals .due { color: var(--ink); font-size: 1.25rem; font-weight: 700; margin-top: 8px; }
+    .ticket footer { border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+    #close-ticket { display: none; }
+    .empty-ticket { color: var(--muted); padding: 28px 4px; text-align: center; }
+    .discount-row { display: flex; align-items: center; gap: 8px; }
+    .discount-row input { max-width: 120px; }
+
+    .mobile-bar { display: none; }
+
+    #receipt, #reports {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 28, 22, 0.72);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 14px;
+    }
+    .slip {
+      width: min(440px, 100%);
+      max-height: min(92vh, 860px);
+      overflow: auto;
+      background: #fffdf8;
+      color: #241c16;
+      padding: 26px 24px 22px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    }
+    .slip .who { font-family: Fraunces, Georgia, serif; font-size: 1.8rem; text-align: center; }
+    .slip .center { text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .slip table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+    .slip td { padding: 5px 0; vertical-align: top; }
+    .slip td.num { text-align: right; white-space: nowrap; }
+    .rule { border: 0; border-top: 1px dashed #cbbba6; margin: 10px 0; }
+    .slip .due { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 700; }
+    .badge { display: inline-block; margin-top: 8px; padding: 4px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; }
+    .badge.ok { background: #e5f4eb; color: var(--ok); }
+    .badge.bad { background: #fde8e4; color: var(--bad); }
+    .slip-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .panel {
+      width: min(720px, 100%);
+      max-height: min(86vh, 760px);
+      overflow: auto;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .report-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #f6efe4;
+      padding: 12px 16px;
+      border-radius: 999px;
+      z-index: 30;
+      max-width: min(520px, calc(100% - 24px));
+    }
+
+    @media (max-width: 860px) {
+      #login { grid-template-columns: 1fr; }
+      .login-story { min-height: auto; padding: 28px 22px 22px; }
+      .login-story h1 { font-size: 3rem; }
+      .workspace { display: block; height: auto; }
+      .menu { padding-bottom: 108px; }
+      .ticket {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 15;
+        max-height: 78vh;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        border-radius: 18px 18px 0 0;
+        transform: translateY(110%);
+        transition: transform 0.2s ease;
+      }
+      .ticket.open { transform: translateY(0); }
+      #close-ticket { display: block; }
+      .mobile-bar {
+        display: flex;
+        position: fixed;
+        left: 12px; right: 12px; bottom: 12px;
+        z-index: 12;
+        background: var(--green);
+        color: #f6efe4;
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 18px;
+        justify-content: space-between;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(20, 49, 38, 0.28);
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="login">
+    <div class="login-story">
+      <div>
+        <div class="eyebrow">Lusaka · Smart Invoice</div>
+        <h1>Mpepo Kitchen</h1>
+      </div>
+      <p>The dining-room register. Plates, starters, and drinks, with a tax invoice on every paid ticket.</p>
+    </div>
+    <div class="login-panel">
+      <form class="login-card" id="login-form">
+        <h2>Staff sign in</h2>
+        <p class="lede">Open the register for this shift. Demo staff can use cashier / mpepo.</p>
+        <div class="field">
+          <label for="username">Name</label>
+          <input id="username" name="username" type="text" autocomplete="username" value="cashier" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" value="mpepo" required />
+        </div>
+        <button class="primary full" type="submit">Open register</button>
+        <div class="status-line" id="login-status"></div>
+      </form>
+    </div>
+  </section>
+
+  <div id="app" class="app hidden">
+    <header class="app-bar">
+      <div class="brand">
+        <strong>Mpepo Kitchen</strong>
+        <span id="shift-label">Register</span>
+      </div>
+      <div class="bar-actions">
+        <button class="ghost" id="reports-btn" type="button">Today</button>
+        <button class="ghost" id="queue-btn" type="button">Queue</button>
+        <button class="ghost" id="signout" type="button">Sign out</button>
+      </div>
+    </header>
+    <div class="workspace">
+      <section class="menu">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search the menu" aria-label="Search the menu" />
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </section>
+      <aside class="ticket" id="ticket">
+        <header>
+          <div>
+            <h2>Ticket</h2>
+            <p id="ticket-count">No items yet</p>
+          </div>
+          <button class="ghost" id="clear-cart" type="button">Clear</button>
+        </header>
+        <div class="lines" id="lines"></div>
+        <div class="totals" id="totals"></div>
+        <footer>
+          <div class="discount-row">
+            <label for="discount">Discount</label>
+            <input id="discount" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+          <button class="primary full" id="checkout" type="button">Take payment</button>
+          <button class="ghost full" id="close-ticket" type="button">Keep ordering</button>
+        </footer>
+      </aside>
+    </div>
+    <button class="mobile-bar" id="mobile-bar" type="button">
+      <span id="mobile-count">View ticket</span>
+      <span id="mobile-total">ZMW 0.00</span>
+    </button>
+  </div>
+
+  <div id="receipt" class="hidden" role="dialog" aria-modal="true" aria-labelledby="slip-title"></div>
+  <div id="reports" class="hidden" role="dialog" aria-modal="true" aria-labelledby="reports-title"></div>
+  <div id="toast" class="hidden" role="status"></div>
+
+  <script>
+    const CATEGORIES = ["All", "Plates", "Starters", "Drinks"];
+    const state = {
+      products: [],
+      cart: {},
+      category: "All",
+      query: "",
+      busy: false,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+      }[ch]));
+    }
+
+    function round2(value) {
+      return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+    }
+
+    function zmw(value) {
+      return "ZMW " + round2(value).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function toast(message) {
+      const node = $("toast");
+      node.textContent = message;
+      node.classList.remove("hidden");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => node.classList.add("hidden"), 3200);
+    }
+
+    function errorText(data, status) {
+      const detail = data && data.detail;
+      if (typeof detail === "string") return detail;
+      if (Array.isArray(detail)) {
+        return detail.map((item) => item.msg).filter(Boolean).join(" ") || `Request failed (${status})`;
+      }
+      return `Request failed (${status})`;
+    }
+
+    async function api(path, body) {
+      const response = await fetch(path, body === undefined ? undefined : {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(errorText(data, response.status));
+      return data;
+    }
+
+    function readQueue() {
+      try { return JSON.parse(localStorage.getItem("mpepo.queue") || "[]"); }
+      catch { return []; }
+    }
+
+    function writeQueue(items) {
+      localStorage.setItem("mpepo.queue", JSON.stringify(items));
+      renderQueueButton();
+    }
+
+    function renderQueueButton() {
+      const count = readQueue().length;
+      $("queue-btn").textContent = count ? `Queue ${count}` : "Queue";
+    }
+
+    function productById(id) {
+      return state.products.find((product) => product.id === id);
+    }
+
+    function discountValue() {
+      return Math.max(0, round2($("discount").value || 0));
+    }
+
+    function ticketLines() {
+      return Object.entries(state.cart)
+        .map(([id, qty]) => ({ product: productById(Number(id)), qty }))
+        .filter((line) => line.product && line.qty > 0)
+        .map((line) => {
+          const net = round2(line.product.price * line.qty);
+          const tax = round2(net * line.product.tax_rate / 100);
+          return { ...line, net, tax, gross: round2(net + tax) };
+        });
+    }
+
+    function totals() {
+      const lines = ticketLines();
+      const net = round2(lines.reduce((sum, line) => sum + line.net, 0));
+      const tax = round2(lines.reduce((sum, line) => sum + line.tax, 0));
+      const discount = discountValue();
+      const due = Math.max(0, round2(net + tax - discount));
+      return { lines, net, tax, discount, due, count: lines.reduce((sum, line) => sum + line.qty, 0) };
+    }
+
+    function renderChips() {
+      $("chips").innerHTML = CATEGORIES.map((category) =>
+        `<button class="chip${category === state.category ? " active" : ""}" type="button" data-category="${esc(category)}">${esc(category)}</button>`
+      ).join("");
+    }
+
+    function renderGrid() {
+      const query = state.query.trim().toLowerCase();
+      const visible = state.products.filter((product) => {
+        const categoryOk = state.category === "All" || product.category === state.category;
+        const queryOk = !query || product.name.toLowerCase().includes(query) || product.sku.toLowerCase().includes(query);
+        return categoryOk && queryOk;
+      });
+      if (!visible.length) {
+        $("grid").innerHTML = `<p class="empty-ticket">Nothing on the pass matches that search.</p>`;
+        return;
+      }
+      $("grid").innerHTML = visible.map((product) => {
+        const qty = state.cart[product.id] || 0;
+        const tone = (product.category || "").toLowerCase();
+        const control = qty
+          ? `<div class="stepper">
+              <button type="button" data-action="remove" data-id="${product.id}" aria-label="Remove one ${esc(product.name)}">−</button>
+              <strong>${qty}</strong>
+              <button type="button" data-action="add" data-id="${product.id}" aria-label="Add one ${esc(product.name)}">+</button>
+            </div>`
+          : `<button class="add" type="button" data-action="add" data-id="${product.id}">Add</button>`;
+        return `<article class="card ${esc(tone)}">
+          <div class="cat">${esc(product.category || "Menu")}</div>
+          <h3>${esc(product.name)}</h3>
+          <div class="meta">${esc(product.sku)} · VAT ${esc(product.tax_rate)}%</div>
+          <div class="price">${zmw(product.price)}</div>
+          ${control}
+        </article>`;
+      }).join("");
+    }
+
+    function renderTicket() {
+      const bill = totals();
+      $("ticket-count").textContent = bill.count ? `${bill.count} item${bill.count === 1 ? "" : "s"}` : "No items yet";
+      $("mobile-count").textContent = bill.count ? `Ticket · ${bill.count}` : "View ticket";
+      $("mobile-total").textContent = zmw(bill.due);
+      $("checkout").disabled = state.busy || bill.count === 0;
+      $("checkout").textContent = state.busy ? "Sending…" : `Take payment · ${zmw(bill.due)}`;
+      if (!bill.lines.length) {
+        $("lines").innerHTML = `<div class="empty-ticket">Add a plate, a starter, or a drink to open a ticket.</div>`;
+      } else {
+        $("lines").innerHTML = bill.lines.map((line) => `<div class="line">
+          <div>
+            <strong>${esc(line.product.name)}</strong>
+            <div class="qty">${line.qty} × ${zmw(line.product.price)}</div>
+          </div>
+          <div>${zmw(line.gross)}</div>
+        </div>`).join("");
+      }
+      $("totals").innerHTML = `
+        <div><span>Net</span><span>${zmw(bill.net)}</span></div>
+        <div><span>VAT</span><span>${zmw(bill.tax)}</span></div>
+        <div><span>Discount</span><span>${zmw(bill.discount)}</span></div>
+        <div class="due"><span>Due</span><span>${zmw(bill.due)}</span></div>`;
+    }
+
+    function render() {
+      renderChips();
+      renderGrid();
+      renderTicket();
+      renderQueueButton();
+    }
+
+    function invoiceOf(log) {
+      const response = log && log.response_json;
+      if (response && response.submitted_invoice) return response.submitted_invoice;
+      return null;
+    }
+
+    function verificationOf(log) {
+      const body = log && log.response_json && log.response_json.external_response && log.response_json.external_response.body;
+      return body && body.verification_code ? body.verification_code : "";
+    }
+
+    function showReceipt(sale, log) {
+      const invoice = invoiceOf(log) || {};
+      const seller = invoice.Seller || { BusinessName: "Mpepo Kitchen", TIN: "", Address: "Lusaka, Zambia" };
+      const lines = invoice.LineItems || (sale.items_json || []).map((item) => ({
+        Description: item.name,
+        Quantity: item.qty,
+        GrossAmount: item.line_total,
+      }));
+      const totalsBlock = invoice.Totals || { NetAmount: sale.total - sale.tax, TaxAmount: sale.tax, Discount: sale.discount, GrossAmount: sale.total };
+      const status = (log && log.status) || "PENDING";
+      const code = verificationOf(log);
+      $("receipt").classList.remove("hidden");
+      $("receipt").innerHTML = `<article class="slip">
+        <div class="who" id="slip-title">${esc(seller.BusinessName || "Mpepo Kitchen")}</div>
+        <div class="center">TIN ${esc(seller.TIN || "")}<br>${esc(seller.Address || "")}</div>
+        <div class="center">Tax invoice ${esc(invoice.InvoiceNumber || ("INV-" + String(sale.id).padStart(6, "0")))}</div>
+        <div class="center">${esc(invoice.InvoiceDate || "")} ${esc(invoice.InvoiceTime || "")}</div>
+        <hr class="rule" />
+        <table>
+          ${lines.map((item) => `<tr>
+            <td>${esc(item.Quantity)} × ${esc(item.Description)}</td>
+            <td class="num">${zmw(item.GrossAmount)}</td>
+          </tr>`).join("")}
+        </table>
+        <hr class="rule" />
+        <div class="due"><span>Net</span><span>${zmw(totalsBlock.NetAmount)}</span></div>
+        <div class="due"><span>VAT</span><span>${zmw(totalsBlock.TaxAmount)}</span></div>
+        <div class="due"><span>Discount</span><span>${zmw(totalsBlock.Discount)}</span></div>
+        <div class="due"><span>Total</span><span>${zmw(totalsBlock.GrossAmount)}</span></div>
+        <div class="center"><span class="badge ${status === "SUCCESS" ? "ok" : "bad"}">${esc(status)}</span></div>
+        <div class="center">${code ? `Verification ${esc(code)}` : "Invoice not confirmed yet. It is queued."}</div>
+        <div class="slip-actions">
+          <button class="primary full" id="new-order" type="button">New ticket</button>
+        </div>
+      </article>`;
+    }
+
+    async function checkout() {
+      const bill = totals();
+      if (!bill.lines.length || state.busy) return;
+      const payload = {
+        items: bill.lines.map((line) => ({ product_id: line.product.id, qty: line.qty })),
+        discount: bill.discount,
+      };
+      state.busy = true;
+      renderTicket();
+      let sale = null;
+      try {
+        sale = await api("/sales", payload);
+      } catch (error) {
+        if (!navigator.onLine || /failed to fetch/i.test(error.message)) {
+          writeQueue(readQueue().concat([{ kind: "sale", ...payload }]));
+          toast("No network. The ticket is queued.");
+        } else {
+          toast(error.message);
+        }
+        state.busy = false;
+        renderTicket();
+        return;
+      }
+      let log = null;
+      try {
+        log = await api("/invoices/submit", { sale_id: sale.id });
+        if (log.status !== "SUCCESS") writeQueue(readQueue().concat([{ kind: "invoice", sale_id: sale.id }]));
+      } catch (error) {
+        writeQueue(readQueue().concat([{ kind: "invoice", sale_id: sale.id }]));
+        toast("Sale saved. The tax invoice will retry.");
+      }
+      state.cart = {};
+      $("discount").value = "0";
+      state.busy = false;
+      $("ticket").classList.remove("open");
+      render();
+      showReceipt(sale, log);
+    }
+
+    async function retryQueue(announce) {
+      const pending = readQueue();
+      if (!pending.length) {
+        if (announce) toast("The queue is empty.");
+        return;
+      }
+      const remaining = [];
+      let sent = 0;
+      for (const entry of pending) {
+        try {
+          if (entry.kind === "invoice") {
+            const log = await api("/invoices/submit", { sale_id: entry.sale_id });
+            if (log.status !== "SUCCESS") remaining.push(entry);
+            else sent += 1;
+          } else {
+            const sale = await api("/sales", { items: entry.items, discount: entry.discount || 0 });
+            const log = await api("/invoices/submit", { sale_id: sale.id });
+            sent += 1;
+            if (log.status !== "SUCCESS") remaining.push({ kind: "invoice", sale_id: sale.id });
+          }
+        } catch {
+          remaining.push(entry);
+        }
+      }
+      writeQueue(remaining);
+      toast(sent ? `Sent ${sent} queued ticket${sent === 1 ? "" : "s"}.` : "Queue is still waiting on the network.");
+    }
+
+    async function showReports() {
+      $("reports").classList.remove("hidden");
+      $("reports").innerHTML = `<div class="panel"><h2 id="reports-title">Today</h2><p>Loading the pass…</p></div>`;
+      try {
+        const [sales, tax] = await Promise.all([api("/reports/daily-sales"), api("/reports/tax-summary")]);
+        const taxByDate = Object.fromEntries(tax.map((row) => [row.date, row.tax]));
+        const rows = sales.length
+          ? sales.map((row) => `<div class="report-row"><div><strong>${esc(row.date)}</strong><div>${esc(row.sales || 0)} tickets</div></div><div>${zmw(row.total)}<div>VAT ${zmw(taxByDate[row.date] || 0)}</div></div></div>`).join("")
+          : `<p>No paid tickets yet this register.</p>`;
+        $("reports").innerHTML = `<div class="panel"><h2 id="reports-title">Daily sales</h2>${rows}<div class="slip-actions"><button class="primary" id="close-reports" type="button">Close</button></div></div>`;
+      } catch (error) {
+        $("reports").innerHTML = `<div class="panel"><h2 id="reports-title">Daily sales</h2><p>${esc(error.message)}</p><button class="primary" id="close-reports" type="button">Close</button></div>`;
+      }
+    }
+
+    async function bootRegister() {
+      const staff = sessionStorage.getItem("mpepo.staff") || "cashier";
+      $("shift-label").textContent = `${staff} · register`;
+      $("login").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      try {
+        state.products = await api("/products");
+      } catch (error) {
+        toast(error.message || "The menu could not be loaded.");
+      }
+      render();
+      retryQueue(false);
+    }
+
+    $("login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = $("login-status");
+      status.textContent = "Checking the staff pass…";
+      status.classList.remove("error");
+      try {
+        const session = await api("/auth/login", {
+          username: $("username").value.trim(),
+          password: $("password").value,
+        });
+        sessionStorage.setItem("mpepo.staff", session.username || $("username").value.trim());
+        await bootRegister();
+      } catch (error) {
+        status.textContent = error.message;
+        status.classList.add("error");
+      }
+    });
+
+    $("chips").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
+      if (!button) return;
+      state.category = button.dataset.category;
+      render();
+    });
+
+    $("grid").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const id = Number(button.dataset.id);
+      const qty = state.cart[id] || 0;
+      if (button.dataset.action === "add") state.cart[id] = qty + 1;
+      if (button.dataset.action === "remove") {
+        if (qty <= 1) delete state.cart[id];
+        else state.cart[id] = qty - 1;
+      }
+      render();
+    });
+
+    $("search").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      renderGrid();
+    });
+    $("discount").addEventListener("input", renderTicket);
+    $("clear-cart").addEventListener("click", () => {
+      state.cart = {};
+      $("discount").value = "0";
+      render();
+    });
+    $("checkout").addEventListener("click", checkout);
+    $("mobile-bar").addEventListener("click", () => $("ticket").classList.add("open"));
+    $("close-ticket").addEventListener("click", () => $("ticket").classList.remove("open"));
+    $("reports-btn").addEventListener("click", showReports);
+    $("queue-btn").addEventListener("click", () => retryQueue(true));
+    $("signout").addEventListener("click", () => {
+      sessionStorage.removeItem("mpepo.staff");
+      $("app").classList.add("hidden");
+      $("login").classList.remove("hidden");
+    });
+    $("receipt").addEventListener("click", (event) => {
+      if (event.target.id === "new-order") $("receipt").classList.add("hidden");
+    });
+    $("reports").addEventListener("click", (event) => {
+      if (event.target.id === "close-reports" || event.target.id === "reports") $("reports").classList.add("hidden");
+    });
+
+    if (sessionStorage.getItem("mpepo.staff")) bootRegister();
+    else {
+      api("/health").then((health) => {
+        $("login-status").textContent = health.products ? `${health.products} menu items ready.` : "Register is up.";
+      }).catch(() => {
+        $("login-status").textContent = "The kitchen server is not responding.";
+        $("login-status").classList.add("error");
+      });
+    }
+  </script>
+</body>
+</html>

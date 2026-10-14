@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sku TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'Plates',
     price REAL NOT NULL CHECK(price >= 0),
     tax_rate REAL NOT NULL DEFAULT 0, -- percentage, e.g. 16.0 for 16%
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -20,7 +21,8 @@ CREATE TABLE IF NOT EXISTS sales (
     total REAL NOT NULL CHECK(total >= 0),
     tax REAL NOT NULL DEFAULT 0,
     discount REAL NOT NULL DEFAULT 0,
-    currency TEXT NOT NULL DEFAULT 'ZMW'
+    currency TEXT NOT NULL DEFAULT 'ZMW',
+    items_json TEXT
 );
 
 -- Sale items (normalized lines)
@@ -59,26 +61,27 @@ CREATE INDEX IF NOT EXISTS idx_sale_items_sale_id ON sale_items(sale_id);
 -- ========== SEED DATA ==========
 
 -- Products (sample set used in the app)
-INSERT INTO products (sku, name, price, tax_rate) VALUES
-('SKU-001','Oreos',15.00,16.0),
-('SKU-002','Grape Juice',30.00,16.0),
-('SKU-003','Cranberry Juice',30.00,16.0),
-('SKU-004','Orange Juice',32.00,16.0),
-('SKU-005','Crispy Chicken Wings (6 pc.)',113.00,12.0),
-('SKU-006','Fried Mozzarella Sticks (6 pc.)',120.00,12.0),
-('SKU-007','Grilled Steak and Wedges',120.00,12.0),
-('SKU-008','Double Patty Cheese Burger',180.00,12.0),
-('SKU-009','Large Cheese Burger',200.00,12.0),
-('SKU-010','Nshima with T-bone',160.00,12.0),
-('SKU-011','Nshima with Fish',165.00,12.0),
-('SKU-012','Nshima with Chicken',165.00,12.0),
-('SKU-013','Bottled Water',10.00,0.0),
-('SKU-014','Nshima Plate',45.00,16.0);
+INSERT INTO products (sku, name, category, price, tax_rate) VALUES
+('SKU-001','Oreos','Starters',15.00,16.0),
+('SKU-002','Grape Juice','Drinks',30.00,16.0),
+('SKU-003','Cranberry Juice','Drinks',30.00,16.0),
+('SKU-004','Orange Juice','Drinks',32.00,16.0),
+('SKU-005','Crispy Chicken Wings (6 pc.)','Starters',113.00,12.0),
+('SKU-006','Fried Mozzarella Sticks (6 pc.)','Starters',120.00,12.0),
+('SKU-007','Grilled Steak and Wedges','Plates',120.00,12.0),
+('SKU-008','Double Patty Cheese Burger','Plates',180.00,12.0),
+('SKU-009','Large Cheese Burger','Plates',200.00,12.0),
+('SKU-010','Nshima with T-bone','Plates',160.00,12.0),
+('SKU-011','Nshima with Fish','Plates',165.00,12.0),
+('SKU-012','Nshima with Chicken','Plates',165.00,12.0),
+('SKU-013','Bottled Water','Drinks',10.00,0.0),
+('SKU-014','Nshima Plate','Plates',45.00,16.0);
 
 -- Single sample sale with two items (demonstrates calculations)
 -- Items: Oreos x2 (15.00 each, 16% tax), Nshima Plate x1 (45.00, 16% tax)
-INSERT INTO sales (created_at, total, tax, discount, currency) VALUES
-('2025-09-24 12:00:00', 87.00, 12.00, 0.00, 'ZMW');
+INSERT INTO sales (created_at, total, tax, discount, currency, items_json) VALUES
+('2025-09-24 12:00:00', 87.00, 12.00, 0.00, 'ZMW',
+'[{"product_id":1,"sku":"SKU-001","name":"Oreos","qty":2,"price":15.0,"tax_rate":16.0,"line_subtotal":30.0,"line_tax":4.8,"line_total":34.8},{"product_id":14,"sku":"SKU-014","name":"Nshima Plate","qty":1,"price":45.0,"tax_rate":16.0,"line_subtotal":45.0,"line_tax":7.2,"line_total":52.2}]');
 
 -- Determine the sale_id inserted (SQLite AUTOINCREMENT gives id=1 if DB empty)
 -- For compatibility when importing, assume this is sale id 1. If not, adjust accordingly.

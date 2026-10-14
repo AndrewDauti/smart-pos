@@ -62,4 +62,15 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 sqlite3 pos.db < ../pos_schema_and_seed.sql
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+The cashier register is served at [http://127.0.0.1:8000](http://127.0.0.1:8000). The menu loads on startup, so a separate seed step is optional. Sign in with `cashier` / `mpepo`.
+
+### **Mobile**
+```bash
+cd mobile
+flutter run
+```
+
+The Android emulator reaches the API at `http://10.0.2.2:8000`, set in `mobile/lib/services/api.dart`.
