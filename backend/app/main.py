@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import models
 from .database import Base, SessionLocal, engine, ensure_compat
@@ -41,3 +42,6 @@ def health():
 @app.get("/")
 def register():
     return FileResponse(STATIC_DIR / "index.html")
+
+
+app.mount("/menu", StaticFiles(directory=STATIC_DIR / "menu"), name="menu")
