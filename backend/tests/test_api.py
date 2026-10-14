@@ -11,6 +11,12 @@ def test_health_and_seeded_menu(client):
     assert {item["name"] for item in drinks} >= {"Grape Juice", "Bottled Water"}
 
 
+def test_menu_photo_is_served(client):
+    photo = client.get("/menu/sku-014.jpg")
+    assert photo.status_code == 200
+    assert photo.headers["content-type"].startswith("image/")
+
+
 def test_register_page_is_served(client):
     page = client.get("/")
     assert page.status_code == 200

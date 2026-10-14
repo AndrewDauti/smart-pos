@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%231f4636'/%3E%3Cpath d='M16 42V24h6l10 12 10-12h6v18h-6V32l-10 12-10-12v10z' fill='%23f4ecdf'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@380;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Chivo:wght@700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #1d1914;
@@ -27,7 +27,7 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; }
     body {
-      font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+      font-family: Barlow, "Segoe UI", sans-serif;
       color: var(--ink);
       background: var(--paper);
       background-image: radial-gradient(rgba(70, 46, 20, 0.045) 0.8px, transparent 0.8px);
@@ -35,7 +35,15 @@
     }
     button, input { font: inherit; color: inherit; }
     button { cursor: pointer; }
-    h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 560; letter-spacing: -0.03em; margin: 0; }
+    h1, h2, h3 { font-family: Barlow, "Segoe UI", sans-serif; font-weight: 700; letter-spacing: 0; margin: 0; }
+    .login-story h1,
+    .login-card h2,
+    .brand strong,
+    .slip .who {
+      font-family: Chivo, "Arial Black", Impact, sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.015em;
+    }
 
     .hidden { display: none !important; }
 
@@ -62,7 +70,7 @@
       font-weight: 600;
       opacity: 0.78;
     }
-    .login-story h1 { font-size: clamp(3.2rem, 6vw, 5.4rem); line-height: 0.92; max-width: 8ch; margin-top: 18px; }
+    .login-story h1 { font-size: clamp(3.5rem, 6.4vw, 5.8rem); line-height: 0.84; max-width: 7ch; margin-top: 18px; text-transform: uppercase; }
     .login-story p { max-width: 34ch; font-size: 1.12rem; line-height: 1.5; color: #eadfcf; }
     .login-panel {
       display: flex;
@@ -71,7 +79,7 @@
       padding: 32px 24px;
     }
     .login-card { width: min(420px, 100%); }
-    .login-card h2 { font-size: 2.1rem; margin-bottom: 8px; }
+    .login-card h2 { font-size: 2.55rem; line-height: 0.95; margin-bottom: 10px; text-transform: uppercase; }
     .login-card .lede { color: var(--muted); margin: 0 0 22px; line-height: 1.45; }
     label { display: block; font-size: 0.86rem; font-weight: 600; margin-bottom: 6px; }
     input[type="text"], input[type="password"], input[type="search"], input[type="number"] {
@@ -109,7 +117,7 @@
       color: #f6efe4;
     }
     .brand { display: flex; flex-direction: column; gap: 2px; }
-    .brand strong { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; font-weight: 560; letter-spacing: -0.03em; }
+    .brand strong { font-size: 1.55rem; line-height: 1; text-transform: uppercase; }
     .brand span { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; }
     .bar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .app .ghost { color: var(--ink); }
@@ -141,25 +149,23 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 18px;
-      padding: 14px 14px 12px;
+      padding: 0;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      min-height: 168px;
-      position: relative;
+      min-height: 0;
       overflow: hidden;
     }
-    .card::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 6px;
-      background: var(--gold);
+    .card .photo {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: #efe6da;
     }
-    .card.drinks::before { background: #2f6f8f; }
-    .card.starters::before { background: var(--clay); }
+    .card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; flex: 1; }
     .card .cat { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
-    .card h3 { font-size: 1.28rem; line-height: 1.15; margin: 8px 0; }
+    .card h3 { font-size: 1.2rem; line-height: 1.15; margin: 6px 0; }
     .card .meta { color: var(--muted); font-size: 0.86rem; }
     .card .price { margin-top: auto; padding-top: 12px; font-weight: 700; }
     .stepper { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
@@ -221,7 +227,7 @@
       padding: 26px 24px 22px;
       box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
     }
-    .slip .who { font-family: Fraunces, Georgia, serif; font-size: 1.8rem; text-align: center; }
+    .slip .who { font-size: 1.7rem; text-align: center; text-transform: uppercase; }
     .slip .center { text-align: center; color: var(--muted); font-size: 0.88rem; }
     .slip table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
     .slip td { padding: 5px 0; vertical-align: top; }
@@ -495,12 +501,16 @@
               <button type="button" data-action="add" data-id="${product.id}" aria-label="Add one ${esc(product.name)}">+</button>
             </div>`
           : `<button class="add" type="button" data-action="add" data-id="${product.id}">Add</button>`;
+        const sku = String(product.sku || "").toLowerCase();
         return `<article class="card ${esc(tone)}">
-          <div class="cat">${esc(product.category || "Menu")}</div>
-          <h3>${esc(product.name)}</h3>
-          <div class="meta">${esc(product.sku)} · VAT ${esc(product.tax_rate)}%</div>
-          <div class="price">${zmw(product.price)}</div>
-          ${control}
+          <img class="photo" src="/menu/${esc(sku)}.jpg" alt="${esc(product.name)}" />
+          <div class="card-body">
+            <div class="cat">${esc(product.category || "Menu")}</div>
+            <h3>${esc(product.name)}</h3>
+            <div class="meta">${esc(product.sku)} · VAT ${esc(product.tax_rate)}%</div>
+            <div class="price">${zmw(product.price)}</div>
+            ${control}
+          </div>
         </article>`;
       }).join("");
     }
